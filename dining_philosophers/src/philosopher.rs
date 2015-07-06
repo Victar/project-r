@@ -1,21 +1,41 @@
-struct Pholisopher {
-    name: String;
-}
+use std::thread;
 
-impl Philospher {
+struct Philosopher {
+    name: String,
+}   
 
-    fn  new(name: &str)-> Philospher {
+impl Philosopher { 
+    fn new(name: &str) -> Philosopher {
         Philosopher {
-	    name: name.to_string(),
-	}
+            name: name.to_string(),
+        }
+    }
+
+    fn eat(&self) {
+        println!("{} is eating.", self.name);
+
+        thread::sleep_ms(1000);
+
+        println!("{} is done eating.", self.name);
     }
 }
 
+fn main() {
+    let philosophers = vec![
+        Philosopher::new("Baruch Spinoza"),
+        Philosopher::new("Gilles Deleuze"),
+        Philosopher::new("Karl Marx"),
+        Philosopher::new("Friedrich Nietzsche"),
+        Philosopher::new("Michel Foucault"),
+    ];
 
-fn main(){
-    let p1 = Philospher::new("Baruch Spinoza");
-    let p2 = Philospher::new("Gilles Deleuze");
-    let p3 = Philospher::new("Karl Marx");
-    let p4 = Philospher::new("Friedrich Nietzscge");
-    let p5 = Philospher::new("Michel Foucault");
+    let handles: Vec<_> = philosophers.into_iter().map(|p| {
+        thread::spawn(move || {
+            p.eat();
+        })
+    }).collect();
+
+    for h in handles {
+        h.join().unwrap();
+    }
 }
